@@ -39,11 +39,8 @@ Warning：该无人机获得的多光谱图像有两个特点：一是多光谱�
 ### 2.在ultralytics/cfg/datasets下创建数据集配置文件`datasets_my_multi.yaml`
 关键点是加上ch:8
 ## 二、代码修改
-<<<<<<< HEAD
-###1.创建my_train.py，该文件实现对yolov8.yaml的加载、训练和评估主函数，后续过程会以运行该文件作为测试。
-=======
+
 ### 1.创建my_train.py，该文件实现对yolov8.yaml的加载、训练和评估主函数，后续过程会以运行该文件作为测试。
->>>>>>> 912b349861592627c0add989b564d6cc74ff7065
 ### 2.向ultralytics/cfg/default.yaml，ultralytics/cfg/models/v8/yolov8.yaml两文件中均添加`ch: 8`参数
 修改至此，运行`my_train.py`会出现的报错是：“期望8通道数据，但实际只有3通道”，因此下面我们进入数据集加载过程中的修改。
 ### 3.修改数据集加载过程中读取图像的代码，保证获取到多通道图像数据。
