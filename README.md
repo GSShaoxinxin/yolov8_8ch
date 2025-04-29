@@ -110,7 +110,7 @@ if __name__ == '__main__':
             self.model.warmup(imgsz=(1 if self.model.pt or self.model.triton else self.dataset.bs,8, *self.imgsz))
 ```
 
-（2）修改数据加载<br>
+（3）修改数据加载<br>
 ultralytics/data/loaders.py文件class LoadImages类`__next__`函数
 ```
  			# Read image
