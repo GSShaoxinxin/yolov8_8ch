@@ -154,7 +154,7 @@ class BaseDataset(Dataset):
                     im = cv2.imread(f)  # BGR
             else:  # read image
                 im = cv2.imread(f)  # BGR
-                ####sxx 增加代码
+                ####hcy 增加代码
                 mx = getMultiImages(f)  # 得到array
                 im = np.concatenate((im, mx), axis=2)
                 #####

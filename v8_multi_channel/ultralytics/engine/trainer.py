@@ -88,7 +88,7 @@ class BaseTrainer:
 
         # Dirs
         self.save_dir = get_save_dir(self.args)
-        # self.args.name = self.save_dir.name  # sxx update name for loggers
+        # self.args.name = self.save_dir.name  # hcy update name for loggers
         self.wdir = self.save_dir / 'weights'  # weights dir
         if RANK in (-1, 0):
             self.wdir.mkdir(parents=True, exist_ok=True)  # make dir

@@ -18,7 +18,7 @@ from PIL import Image
 from ultralytics.data.utils import IMG_FORMATS, VID_FORMATS
 from ultralytics.utils import LOGGER, is_colab, is_kaggle, ops
 from ultralytics.utils.checks import check_requirements
-from .utils import getMultiImages #sxx
+from .utils import getMultiImages #hcy
 
 @dataclass
 class SourceTypes:
@@ -339,7 +339,7 @@ class LoadImages:
             # Read image
             self.count += 1
             im0 = cv2.imread(path)  # BGR
-            #↓↓↓↓↓↓ sxx 添加代码
+            #↓↓↓↓↓↓ hcy 添加代码
             mx = getMultiImages(path)  # 得到array
             if len(mx) > 0:
                 im0 = np.concatenate((im0, mx), axis=2)

@@ -240,7 +240,7 @@ class BasePredictor:
 
         # Warmup model
         if not self.done_warmup:
-            #sxx 修改代码 self.model.warmup(imgsz=(1 if self.model.pt or self.model.triton else self.dataset.bs, 3, *self.imgsz))
+            #hcy 修改代码 self.model.warmup(imgsz=(1 if self.model.pt or self.model.triton else self.dataset.bs, 3, *self.imgsz))
             # 在推理时用了.pt 所以要用8
             self.model.warmup(imgsz=(1 if self.model.pt or self.model.triton else self.dataset.bs,8, *self.imgsz))
             self.done_warmup = True

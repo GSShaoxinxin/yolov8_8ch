@@ -72,7 +72,7 @@ class Annotator:
     """
 
     def __init__(self, im, line_width=None, font_size=None, font='Arial.ttf', pil=False, example='abc'):
-        # sxx 增加代码
+        # hcy 增加代码
         im = im[:, :, :3].copy()
         """Initialize the Annotator class with image and line width along with color palette for keypoints and limbs."""
         assert im.data.contiguous, 'Image not contiguous. Apply np.ascontiguousarray(im) to Annotator() input images.'
@@ -399,7 +399,7 @@ def plot_images(images,
         images *= 255  # de-normalise (optional)
 
     # Build Image
-    #sxx 代码修改
+    #hcy 代码修改
     # mosaic = np.full((int(ns * h), int(ns * w), 3), 255, dtype=np.uint8)  # init
     mosaic = np.full((int(ns * h), int(ns * w), images.shape[1]), 255, dtype=np.uint8)  # init
 

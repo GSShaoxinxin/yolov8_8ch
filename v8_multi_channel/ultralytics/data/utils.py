@@ -29,7 +29,7 @@ VID_FORMATS = 'asf', 'avi', 'gif', 'm4v', 'mkv', 'mov', 'mp4', 'mpeg', 'mpg', 't
 PIN_MEMORY = str(os.getenv('PIN_MEMORY', True)).lower() == 'true'  # global pin_memory for dataloaders
 
 
-#sxx↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
+#hcy↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
 import tifffile as tiff
 def getMultiImages( rgb_path):
    #根据jpg文件路径替换掉后缀找到TIF文件
