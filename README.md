@@ -1,4 +1,4 @@
-#YOLOv8接收多通道数据进行训练
+# YOLOv8接收多通道数据进行训练
 本文介绍实现向YOLOv8输入多通道数据（>3）进行训练的修改过程。<br>
 阅读须知：<br>
 本文修改过程可对照代码进行阅读<br>
@@ -7,11 +7,11 @@
 本文只是多通道方法的一种实现，还有一种方法是通过多个dataloader实现，这种实现方法不会牵扯到数据增强过程的修改，修改处可能更少，也是一种有效的方法<br>
 如果直接使用本代码，只需要关注数据机构建和代码修改中的数据加载部分。
 
-##一、构建数据集：
+## 一、构建数据集：
 本文多通道数据以大疆精灵4多光谱无人机采集到的可见光和多光谱图像数据为例,该无人机同时获取一张彩色图和5张单波段灰度图，名称是DJI_xxxx0.JPG,DJI_xxxx1.TIF,DJI_xxxx2.TIF,DJI_xxxx3.TIF,DJI_xxxx4.TIF,DJI_xxxx5.TIF,文件名中的后缀0.JPG、1.TIF、2.TIF、3.TIF、4.TIF和5.TIF分别代表RGB彩色图、蓝波段、绿波段、红波段、红边波段和近红外波段图像。因此，本文设计将多光谱TIF图像和JPG图像放在同一文件夹下（即yolo数据集的images文件夹下），根据JPG图像径得到对应的不同波段光谱图像。<br>
 Warning：该无人机获得的多光谱图像有两个特点：一是多光谱图像存在空间不匹配问题，二是彩色JPG图像的值在0-255，多光谱TIF图像的值在0-65535，分布不同，需要做额外的处理，本文在此不进行介绍，以已经对齐的、值统一在0-255的图像数据为基础进行后续步骤<br>
 本文设计多通道图像的加载逻辑是：以RGB图像为依据，通过文件名的对应直接找到其他光谱图像加载到模型中。<br>
-###1.数据集参考datasets_my_multi文件夹
+### 1.数据集参考datasets_my_multi文件夹
 ```
 ├── `datasets_my_multi` 
 │   ├── images
@@ -36,13 +36,13 @@ Warning：该无人机获得的多光谱图像有两个特点：一是多光谱�
 │   ├── train.txt
 │   └── val.txt
 ```
-###2.在ultralytics/cfg/datasets下创建数据集配置文件`datasets_my_multi.yaml`
+### 2.在ultralytics/cfg/datasets下创建数据集配置文件`datasets_my_multi.yaml`
 关键点是加上ch:8
-##二、代码修改
-###1.创建my_train.py，该文件实现对yolov8.yaml的加载、训练和评估主函数，后续过程会以运行该文件作为测试。
-###2.向ultralytics/cfg/default.yaml，ultralytics/cfg/models/v8/yolov8.yaml两文件中均添加`ch: 8`参数
+## 二、代码修改
+### 1.创建my_train.py，该文件实现对yolov8.yaml的加载、训练和评估主函数，后续过程会以运行该文件作为测试。
+### 2.向ultralytics/cfg/default.yaml，ultralytics/cfg/models/v8/yolov8.yaml两文件中均添加`ch: 8`参数
 修改至此，运行`my_train.py`会出现的报错是：“期望8通道数据，但实际只有3通道”，因此下面我们进入数据集加载过程中的修改。
-###3.修改数据集加载过程中读取图像的代码，保证获取到多通道图像数据。
+### 3.修改数据集加载过程中读取图像的代码，保证获取到多通道图像数据。
 这部分内容根据自己的数据特点可以有不同实现方法。在原yolov8中，ultralytics/data/base.py文件`load_image`函数中用代码`im = cv2.imread(f) `读取到h×w×3的RGB彩色图像，而我们现在期望增加5张多光谱图像，读取到h×w×8的数据。因此我自定义getMultiImages函数根据彩色图的路径得到五张多光谱图像，并依次读取并堆叠成h×w×5数据，再和彩色图堆叠起来，最终实现读取了h×w×8数据。<br>
 ```
 				im = cv2.imread(f)  # BGR
@@ -53,7 +53,7 @@ Warning：该无人机获得的多光谱图像有两个特点：一是多光谱�
 ```
 
 修改至此，运行`my_train.py`会出现的报错是：“Invalid number of channels in input image:...”，原因是数据增强步骤的opencv函数都只接受3通道或者1通道的数据，8通道的数据输入不符合函数定义，下面对数据增强部分进行修改。
-###4.修改数据增强不能处理8通道数据的问题。
+### 4.修改数据增强不能处理8通道数据的问题。
 以下处理顺序是根据运行`my_train.py`出现错误的顺序进行，修改完一条后，运行`my_train.py`进行后一个修改处。<br>
 （1）ultralytics/data/augment.py 文件def v8_transforms定义中注释掉RandomHSV。8通道数据不能转换到hsv颜色空间了，因此放弃使用这种增强方法。<br>
 （2）ultralytics/utils/plotting.py文件def plot_images函数中进行mosaic增强时，原先创建新图像是3通道，修改为创建新图根据输入图的通道而定。<br>
@@ -93,7 +93,7 @@ Warning：该无人机获得的多光谱图像有两个特点：一是多光谱�
         im = im[:, :, :3].copy()
 ```
 至此，`my_train.py`就跑通了，train和val都可以正常运行了
-###5.推理过程的8通道实现<br>
+### 5.推理过程的8通道实现<br>
 （1）创建`my_pred.py`,其中一个参数是模型pt文件路径，一个是txt文件，里面包含了推理的文件名称，这里我们用数据集中test.txt
 ```
 if __name__ == '__main__':
@@ -123,7 +123,7 @@ ultralytics/data/loaders.py文件class LoadImages类`__next__`函数
             #↑↑↑↑↑↑↑
 ```
 
-#其他注意
+# 其他注意
 yolov8加载图像过程会将读取到的bgr图像在进入网络之前翻转为rgb
 
 
